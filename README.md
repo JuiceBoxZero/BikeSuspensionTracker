@@ -10,18 +10,41 @@ Open a terminal and type the following to make sure your Pi is updated (This cou
 sudo apt-get update
 sudo apt-get upgrade
 ```
-Then type the following to actually download the code:
+You'll need to make sure you have the Adafruit GPIO Python library installed.
+Follow the instructions here to install it:
+
+https://github.com/adafruit/Adafruit_Python_GPIO
+
+Then type the following to download the supporting files (huge thanks to mattdy!):
 ```
 git clone https://github.com/mattdy/python-lis3dh.git
 ```
-Now you need to run the setup, so get into the newly downloaded folder by typing:
+Enter the python-lis3dh folder that was just made:
 ```
-cd LowBatteryShutdown
+cd python-lis3dh
 ```
-and run the setup by typing:
+Now download the JuiceBox Zero example code:
 ```
-sudo python setup.py install
+git clone https://github.com/JuiceBoxZero/BikeSuspensionTracker.git
 ```
+This should be all you need to get running. Now test out your accelerometers by running the testLIS3DH.py script by typing:
+```
+sudo python testLIS3DH.py
+```
+(press Ctrl-c to kill the program)
+This will test the accelerometer that is set to address 0x18 (the default in the code)
+See here for more details on how to change the address: 
+
+https://learn.adafruit.com/adafruit-lis3dh-triple-axis-accelerometer-breakout?view=all
+
+Now test out your dual accelerometer setup by running the suspension.py script:
+```
+sudo python suspension.py
+```
+
+Once you verify that both accelerometers are outputting the correct magnitude reading, you can change the 
+```degug = True``` to ```debug = False```
+
 Then, to make sure the code runs in the background, you'll create a crontab.
 Do this by typing:
 ```
@@ -30,7 +53,7 @@ sudo crontab -e
 (select a text editor, usually "Nano" is the default option)
 At the bottom of the file add the line:
 ```
-@reboot python /home/pi/LowBatteryShutdown/LowBatteryShutdown.py &
+@reboot python /home/pi/python-lis3dh/suspension.py &
 ```
 Now save and exit.
 Then, reboot your Pi with:
@@ -38,20 +61,6 @@ Then, reboot your Pi with:
 sudo reboot -n
 ```
 That's it!
-Your Pi will automatically shut down (safely!) whenever JuiceBox Zero is connected to your Pi and the Low Battery indicator goes to a logic HIGH.
-
-*****
-It is important to note that you must completely disconnect power to the Pi before it can be turned back on again. 
-Do this by simply sliding the power switch to the off position and then back on again. Your Pi will power up like normal.
-*****
-
-In case you need to change anything, the python script that is running in the background is located here:
-```
-/home/pi/LowBatteryShutdown/
-```
-and is called:
-```
-LowBatteryShutdown.py
-```
-
-Type ```sudo nano /home/pi/LowBatteryShutdown/LowBatteryShutdown.py``` to look at and/or edit the file. 
+The next time you reboot your Pi, you will automatically start logging data! 
+Once you are done with logging your ride connect your Pi HDMI and a keyboard. 
+You'll need to stop your datalogging gracefully, but I haven't implemented anything to do that yet..
